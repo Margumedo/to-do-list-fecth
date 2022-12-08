@@ -36,7 +36,7 @@ const Home = () => {
 						<input
 							onKeyDown={saveTask}
 							onChange={handleChange}
-							className="w-100"
+							className="w-100 shadow-none"
 							type="text"
 							placeholder="What needs to be done?"
 							value={task} />
@@ -46,15 +46,23 @@ const Home = () => {
 
 			<div className="container">
 				<div className="row justify-content-center ">
-					<div className="col-6 col-md-4 border">
-						<ul className="p-0">
-						{listTask < 1
-						? "Agrega una tarea"
-						:listTask.map((item, index) => {
-								return (
-									<li className="lista" key={index}>{item} <i class="fas fa-times"></i></li>
-								);
-							})}
+					<div className="col-6 col-md-4 border p-0">
+						<ul className="ps-0">
+							{listTask < 1
+								? <span className="ps-3"> Agrega una tarea </span> 
+								: listTask.map((item, index) => {
+									return (
+										<div key={index} className="container-fluid d-flex justify-content-between border-bottom">
+											<div>
+												<li className="lista" >{item}</li>
+											</div>
+											<div>
+												<i className="fas fa-times"></i>
+											</div>
+
+										</div>
+									);
+								})}
 						</ul>
 					</div>
 				</div>
@@ -65,4 +73,3 @@ const Home = () => {
 };
 
 export default Home;
- 

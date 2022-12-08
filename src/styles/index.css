@@ -13,3 +13,19 @@
 .lista{
     list-style: none;
 }
+
+body{
+    
+    font-family: 'Montserrat', sans-serif;
+    font-size: larger;
+}
+
+h1{
+    font-size: 80px;
+    
+}
+
+input{
+    border: 0;
+    outline: none;
+}
