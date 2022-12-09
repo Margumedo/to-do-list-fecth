@@ -26,13 +26,19 @@ const Home = () => {
 		}
 	}
 
+	const deleteTask = (id)=>{
+		let newArray = listTask.filter((task, index)=> id != index)
+		setListTask(newArray);
+	}
+
+
 	return (
 		<>
-			<h1 className="text-center">todos</h1>
+			<h1 className="text-center todo">todos</h1>
 
-			<div className="container ">
+			<div className="container  ">
 				<div className="row justify-content-center ">
-					<div className="col-6 col-md-4 border ">
+					<div className="col-8 col-md-6 border border-bottom-0 px-5 py-2 contenedor">
 						<input
 							onKeyDown={saveTask}
 							onChange={handleChange}
@@ -42,31 +48,36 @@ const Home = () => {
 							value={task} />
 					</div>
 				</div>
-			</div>
-
-			<div className="container">
 				<div className="row justify-content-center ">
-					<div className="col-6 col-md-4 border p-0">
+					<div className="col-8 col-md-6 border p-0 contenedor">
 						<ul className="ps-0">
 							{listTask < 1
-								? <span className="ps-3"> Agrega una tarea </span> 
+								? <div className="ps-5 border-bottom py-2">
+									No tasks, add a task
+								</div>
+								
 								: listTask.map((item, index) => {
 									return (
-										<div key={index} className="container-fluid d-flex justify-content-between border-bottom">
-											<div>
+										<div key={index} onClick={()=>deleteTask(index)} className="container border-bottom padre">
+											<div className="tarea">
 												<li className="lista" >{item}</li>
 											</div>
-											<div>
+											<div className="icono" >
 												<i className="fas fa-times"></i>
 											</div>
-
 										</div>
 									);
 								})}
 						</ul>
+						<div className="registro">
+
+						{`${listTask.length} item left`}
+						</div>
 					</div>
 				</div>
 			</div>
+
+			
 			{/* <Form/> */}
 		</>
 	);
