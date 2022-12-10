@@ -76,9 +76,6 @@ const Home = () => {
 					</div>
 				</div>
 			</div>
-
-			
-			{/* <Form/> */}
 		</>
 	);
 };
