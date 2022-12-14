@@ -1,27 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 
 const Home = () => {
 
-	const [task, setTask] = useState("");
+	//creo mis variables
+	const urlBase = 'http://assets.breatheco.de/apis/fake/todos/user'
+	const name = 'maicol'
+
+	//creo mis hooks
+	const [task, setTask] = useState({
+		label: "",
+		done: false
+	});
 
 	const [listTask, setListTask] = useState([]);
 
 	const handleChange = (e) => {
-		setTask(e.target.value)
+		setTask({
+			[e.target.name]: e.target.value,
+			done: false
+		})
 
 	}
 
+	// creo mis funciones
 	const saveTask = (e) => {
 		if (e.key === "Enter") {
-			if (task.trim() !== "") {
+			if (task.label.trim() !== "") {
 				setListTask([...listTask, task])
-				setTask("")
-
-			} else {
-				console.log("La tarea no puede estar vacia")
-			}
-
+				setTask({
+					label: "",
+					done: false})
+					
+				} else {
+					console.log("La tarea no puede estar vacia")
+				}
+			
 		}
 	}
 
@@ -30,6 +44,94 @@ const Home = () => {
 		setListTask(newArray);
 	}
 
+	//funciones para la API
+
+	const getTodos = async ()=>{
+
+		try {
+			let response = await fetch(`${urlBase}/${name}`)
+			console.log(response.status)
+			if(response.status === 404){
+				let responseTodos = await fetch(`${urlBase}/${name}`,{
+					method: "POST",
+					headers:{
+						  "Content-Type": "application/json",  
+						},
+					body: JSON.stringify([])
+				})
+
+				if(responseTodos.ok){
+					console.log(`Se ha creado el usuario ${name}`)
+					getTodos();
+				}
+
+			}else{
+				let data = await response.json();
+				setListTask(data)
+				console.log("Epa bro, todo bien se han traido las tareas")
+			}
+		} catch (error) {
+			console.log(`Epa manin explote con el siguiente error: ${error}`)
+		}
+	}
+
+	const saveTodos = async (e)=>{
+		if(e.key === "Enter"){
+			if(task.label.trim()!==""){
+				try {
+					let response = await fetch(`${urlBase}/${name}`,{
+						method: "PUT",
+						headers: {
+							"Content-Type" : "application/json"
+						},
+						body : JSON.stringify([...listTask,task])
+					})
+					if(response.ok){
+						let data = await response.json();
+						setTask({
+							label: "",
+							done: false})
+						getTodos();	
+						console.log(data);
+					}else{
+						console.log(response.status);
+					}
+				} catch (error) {
+					console.log(`Explote manin con el siguiente error: ${error}`)
+				}
+
+			}else{
+				console.log("La tarea no puede estar vacia")	
+			}
+		}
+	}
+
+	const deleteTaskApi = async (id)=>{
+		let newArray = listTask.filter((task, index)=> id != index)
+		console.log(newArray)
+
+		try {
+			let response = await fetch(`${urlBase}/${name}`, {
+				method : "PUT",
+				headers : {
+					"Content-Type" : "application/json",
+				},
+				body : JSON.stringify(newArray)
+			})
+
+			if(response.ok){
+				console.log("se borro la tarea")
+				getTodos();
+			}
+		} catch (error) {
+			console.log(`Explote manin con el siguiente error: ${error}`)
+		}
+	}
+
+	useEffect(()=>{
+		getTodos();
+	},[])
+
 
 	return (
 		<>
@@ -37,18 +139,19 @@ const Home = () => {
 
 			<div className="container  ">
 				<div className="row justify-content-center ">
-					<div className="col-8 col-md-6 border border-bottom-0 px-5 py-2 contenedor">
+					<div className="col-12 col-sm-10 col-md-8 col-lg-6  border border-bottom-0 px-5 py-2 contenedor">
 						<input
-							onKeyDown={saveTask}
+							onKeyDown={saveTodos}
 							onChange={handleChange}
 							className="w-100 shadow-none"
 							type="text"
 							placeholder="What needs to be done?"
-							value={task} />
+							value={task.label} 
+							name = "label"/>
 					</div>
 				</div>
 				<div className="row justify-content-center ">
-					<div className="col-8 col-md-6 border p-0 contenedor">
+					<div className="col-12 col-sm-10 col-md-8 col-lg-6 border p-0 contenedor">
 						<ul className="ps-0">
 							{listTask < 1
 								? <div className="ps-5 border-bottom py-2">
@@ -57,9 +160,9 @@ const Home = () => {
 								
 								: listTask.map((item, index) => {
 									return (
-										<div key={index} onClick={()=>deleteTask(index)} className="container border-bottom padre">
+										<div key={index} onClick={()=>deleteTaskApi(index)} className="container border-bottom padre">
 											<div className="tarea">
-												<li className="lista" >{item}</li>
+												<li className="lista" >{item.label}</li>
 											</div>
 											<div className="icono" >
 												<i className="fas fa-times"></i>
