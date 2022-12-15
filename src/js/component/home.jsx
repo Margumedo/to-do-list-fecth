@@ -6,6 +6,7 @@ const Home = () => {
 	//creo mis variables
 	const urlBase = 'http://assets.breatheco.de/apis/fake/todos/user'
 	const name = 'maicol'
+	const bValue= "Delete"
 
 	//creo mis hooks
 	const [task, setTask] = useState({
@@ -109,22 +110,46 @@ const Home = () => {
 	const deleteTaskApi = async (id)=>{
 		let newArray = listTask.filter((task, index)=> id != index)
 		console.log(newArray)
+		if(newArray.length >= 1){
+			try {
+				let response = await fetch(`${urlBase}/${name}`, {
+					method : "PUT",
+					headers : {
+						"Content-Type" : "application/json",
+					},
+					body : JSON.stringify(newArray)
+				})
+	
+				if(response.ok){
+					console.log("se borro la tarea")
+					getTodos();
+				}
+			} catch (error) {
+				console.log(`Explote manin con el siguiente error: ${error}`)
+			}
+		}else{
+			setListTask([])
+			
+		}
+	}
 
+	const deleteUserApi = async ()=>{
 		try {
-			let response = await fetch(`${urlBase}/${name}`, {
-				method : "PUT",
-				headers : {
-					"Content-Type" : "application/json",
-				},
-				body : JSON.stringify(newArray)
+			let response = await fetch(`${urlBase}/${name}`,{
+				method : "DELETE"
 			})
 
 			if(response.ok){
-				console.log("se borro la tarea")
+				let data = await response.json();
+				console.log(data)
+				console.log("se borro el usuario")
 				getTodos();
+			}else{
+				console.log("No se borro el usuario")
 			}
+
 		} catch (error) {
-			console.log(`Explote manin con el siguiente error: ${error}`)
+			console.log(`Explote manin revisa el error: ${error}`)
 		}
 	}
 
@@ -138,8 +163,8 @@ const Home = () => {
 			<h1 className="text-center todo">todos</h1>
 
 			<div className="container  ">
-				<div className="row justify-content-center ">
-					<div className="col-12 col-sm-10 col-md-8 col-lg-6  border border-bottom-0 px-5 py-2 contenedor">
+				<div className="row  justify-content-center ">
+					<div className="col-12 col-sm-10 col-md-8 col-lg-6  border border-bottom-0 px-5 py-2 contenedor d-flex">
 						<input
 							onKeyDown={saveTodos}
 							onChange={handleChange}
@@ -148,6 +173,7 @@ const Home = () => {
 							placeholder="What needs to be done?"
 							value={task.label} 
 							name = "label"/>
+						<button onClick={deleteUserApi} className="btn btn-danger ms-3 button">Delete</button>	
 					</div>
 				</div>
 				<div className="row justify-content-center ">
